@@ -1,6 +1,5 @@
 package gestionale.aziendale.entities;
 
-import gestionale.aziendale.enumm.Ruolo;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,34 +8,35 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table(name = "utenti")
+@Table(name = "fornitori")
 @NoArgsConstructor
 @Getter
 @Setter
-public class Utente {
+public class Fornitore {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column
     private UUID id;
+
     @Column(nullable = false)
     private String nome;
+    @Column(nullable = false,unique = true)
+    private String partitaIva;
     @Column(nullable = false)
-    private String cognome;
+    private String telefono;
     @Column(nullable = false,unique = true)
     private String email;
     @Column(nullable = false)
-    private String password;
-    @Enumerated(EnumType.STRING)
+    private String indirizzo;
     @Column(nullable = false)
-    private Ruolo ruolo;
+    private String categoria;
 
-
-    public Utente(String nome, String cognome, String email, String password, Ruolo ruolo) {
+    public Fornitore(String nome, String partitaIva, String telefono, String email, String indirizzo, String categoria) {
         this.nome = nome;
-        this.cognome = cognome;
+        this.partitaIva = partitaIva;
+        this.telefono = telefono;
         this.email = email;
-        this.password = password;
-        this.ruolo = ruolo;
+        this.indirizzo = indirizzo;
+        this.categoria = categoria;
     }
 }
-
