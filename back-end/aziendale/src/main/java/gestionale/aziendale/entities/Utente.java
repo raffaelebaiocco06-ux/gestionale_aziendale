@@ -31,12 +31,12 @@ public class Utente {
     private Ruolo ruolo;
 
 
-    public Utente(String nome, String cognome, String email, String password, Ruolo ruolo) {
+    public Utente(String nome, String cognome, String email, String password) {
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
         this.password = password;
-        this.ruolo = ruolo;
+        this.ruolo = Ruolo.OPERATORE;
     }
 }
 
