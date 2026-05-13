@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -18,15 +19,16 @@ public class UtenteService {
 
 
     private final UtenteRepository utenteRepository;
+    private final PasswordEncoder bcrypt;
 
-    public UtenteService(UtenteRepository utenteRepository) {
+    public UtenteService(UtenteRepository utenteRepository, PasswordEncoder bcrypt) {
         this.utenteRepository = utenteRepository;
+        this.bcrypt = bcrypt;
     }
-
 
     public Utente save(UtenteDTO body){
         if(this.utenteRepository.existsByEmail(body.email())) throw new BadRequEx("L'indirizzo email " + body.email() + " è già in uso!");
-        Utente nuovoUtente= new Utente(body.nome(),body.cognome(),body.email(),body.password());
+        Utente nuovoUtente= new Utente(body.nome(),body.cognome(),body.email(),this.bcrypt.encode(body.password()));
         return utenteRepository.save(nuovoUtente);
     }
 
