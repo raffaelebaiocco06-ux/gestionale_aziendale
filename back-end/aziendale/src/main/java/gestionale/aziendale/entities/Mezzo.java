@@ -28,6 +28,7 @@ public class Mezzo {
     private String modello;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TipoMezzo tipo;
     @Column(nullable = false)
     private Integer anno;
