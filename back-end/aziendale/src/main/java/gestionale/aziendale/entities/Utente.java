@@ -1,5 +1,7 @@
 package gestionale.aziendale.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gestionale.aziendale.enumm.Ruolo;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,6 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@JsonIgnoreProperties({"accountNonExpired", "accountNonLocked", "authorities", "credentialsNonExpired", "enabled"})
 public class Utente {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,18 +28,19 @@ public class Utente {
     @Column(nullable = false,unique = true)
     private String email;
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Ruolo ruolo;
 
 
-    public Utente(String nome, String cognome, String email, String password, Ruolo ruolo) {
+    public Utente(String nome, String cognome, String email, String password) {
         this.nome = nome;
         this.cognome = cognome;
         this.email = email;
         this.password = password;
-        this.ruolo = ruolo;
+        this.ruolo = Ruolo.OPERATORE;
     }
 }
 
