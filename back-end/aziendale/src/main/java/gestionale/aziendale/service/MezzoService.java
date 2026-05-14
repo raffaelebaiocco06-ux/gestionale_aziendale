@@ -2,6 +2,7 @@ package gestionale.aziendale.service;
 
 
 import gestionale.aziendale.entities.Mezzo;
+import gestionale.aziendale.enumm.TipoScadenza;
 import gestionale.aziendale.exception.BadRequEx;
 import gestionale.aziendale.exception.NotFound;
 import gestionale.aziendale.payload.MezzoDTO;
@@ -17,14 +18,24 @@ import java.util.UUID;
 @Service
 public class MezzoService {
     private final MezzoRepository mezzoRepository;
+    private final ScadenzaService scadenzaService;
 
-    public MezzoService(MezzoRepository mezzoRepository) {
+    public MezzoService(MezzoRepository mezzoRepository, ScadenzaService scadenzaService) {
         this.mezzoRepository = mezzoRepository;
+        this.scadenzaService = scadenzaService;
     }
+
     public Mezzo save(MezzoDTO body){
         if(this.mezzoRepository.existsByTarga(body.targa())) throw new BadRequEx("la targa " + body.targa() + " è già in uso!");
         Mezzo nuovoMezzo= new Mezzo(body.targa(), body.marca(), body.modello(),body.tipo(), body.anno(), body.assicurazioneScadenza(),body.bolloScadenza(),body.revisioneScadenza());
-        return nuovoMezzo;
+        Mezzo mezzoSalvato = this.mezzoRepository.save(nuovoMezzo);
+
+        // qua devo salvare 3 tipi di scadenze co i metodi del service
+        scadenzaService.creaScadenzaAutomatica("Assicurazione "+mezzoSalvato.getTarga(),   "Scadenza assicurazione del mezzo " + mezzoSalvato.getMarca() + " " + mezzoSalvato.getModello(), mezzoSalvato.getAssicurazioneScadenza(), TipoScadenza.ASSICURAZIONE,mezzoSalvato);
+        scadenzaService.creaScadenzaAutomatica("Bollo " + mezzoSalvato.getTarga(), "Scadenza bollo del mezzo " + mezzoSalvato.getMarca() + " " + mezzoSalvato.getModello(), mezzoSalvato.getBolloScadenza(), TipoScadenza.BOLLO, mezzoSalvato);
+        scadenzaService.creaScadenzaAutomatica("Revisione " + mezzoSalvato.getTarga(),"Scadenza revisione del mezzo " + mezzoSalvato.getMarca() + " " + mezzoSalvato.getModello(), mezzoSalvato.getRevisioneScadenza(), TipoScadenza.REVISIONE, mezzoSalvato);
+
+        return mezzoSalvato;
     }
     public Page<Mezzo> findAll(int page, int size, String sortBy) {
         if (size > 100 || size < 0) size = 10;
@@ -50,8 +61,16 @@ public class MezzoService {
         trovato.setBolloScadenza(body.bolloScadenza());
         trovato.setRevisioneScadenza(body.revisioneScadenza());
 
-        Mezzo nuovo = this.mezzoRepository.save(trovato);
-        return nuovo;
+        Mezzo mezzoSalvato = this.mezzoRepository.save(trovato);
+
+        //lo devo rifare anche qua visto che le scadenze potrebbero cambiare
+        scadenzaService.aggiornaScadenzaAutomatica("Assicurazione " + mezzoSalvato.getTarga(), "Scadenza assicurazione del mezzo " + mezzoSalvato.getMarca() + " " + mezzoSalvato.getModello(), mezzoSalvato.getAssicurazioneScadenza(), TipoScadenza.ASSICURAZIONE, mezzoSalvato);
+
+        scadenzaService.aggiornaScadenzaAutomatica("Bollo " + mezzoSalvato.getTarga(), "Scadenza bollo del mezzo " + mezzoSalvato.getMarca() + " " + mezzoSalvato.getModello(), mezzoSalvato.getBolloScadenza(), TipoScadenza.BOLLO, mezzoSalvato);
+
+        scadenzaService.aggiornaScadenzaAutomatica("Revisione " + mezzoSalvato.getTarga(), "Scadenza revisione del mezzo " + mezzoSalvato.getMarca() + " " + mezzoSalvato.getModello(), mezzoSalvato.getRevisioneScadenza(), TipoScadenza.REVISIONE, mezzoSalvato);
+
+        return mezzoSalvato;
     }
     public void findByIdAndDelete(UUID Id) {
         Mezzo trovato = this.findById(Id);
