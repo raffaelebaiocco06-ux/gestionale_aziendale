@@ -50,18 +50,7 @@ public class MovimentoService {
             mezzo = this.mezzoService.findById(body.mezzoId());
         }
 
-        Movimento nuovoMovimento = new Movimento(
-                categoria,
-                cliente,
-                fornitore,
-                mezzo,
-                body.tipo(),
-                body.descrizione(),
-                body.importo(),
-                body.dataMovimento(),
-                body.metodoPagamento(),
-                body.stato()
-        );
+        Movimento nuovoMovimento = new Movimento(categoria, cliente, fornitore, mezzo, body.tipo(), body.descrizione(), body.importo(), body.dataMovimento(), body.metodoPagamento(), body.stato());
 
         return this.movimentoRepository.save(nuovoMovimento);
     }
