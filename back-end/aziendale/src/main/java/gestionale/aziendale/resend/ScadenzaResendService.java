@@ -4,7 +4,6 @@ import gestionale.aziendale.entities.Mezzo;
 import gestionale.aziendale.entities.Scadenza;
 import gestionale.aziendale.entities.Utente;
 import gestionale.aziendale.repository.ScadenzaRepository;
-import gestionale.aziendale.repository.UtenteRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
