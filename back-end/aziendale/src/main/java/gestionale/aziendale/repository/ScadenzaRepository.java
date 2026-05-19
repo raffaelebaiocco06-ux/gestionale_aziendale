@@ -23,4 +23,6 @@ public interface ScadenzaRepository extends JpaRepository<Scadenza, UUID> {
     List<Scadenza> findByDataScadenzaBetween(LocalDate start, LocalDate end);
 
     Optional<Scadenza> findByMezzoIdAndTipo(UUID mezzoId, TipoScadenza tipo);
+
+    List<Scadenza> findByDataScadenza(LocalDate dataScadenza);
 }

@@ -31,5 +31,6 @@ public record MezzoDTO(
         @NotNull(message = "La scadenza revisione è obbligatoria")
         LocalDate revisioneScadenza
 
+
 ) {
 }

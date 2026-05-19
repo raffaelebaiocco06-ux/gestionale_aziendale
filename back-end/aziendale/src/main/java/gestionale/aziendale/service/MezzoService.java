@@ -2,6 +2,7 @@ package gestionale.aziendale.service;
 
 
 import gestionale.aziendale.entities.Mezzo;
+import gestionale.aziendale.entities.Utente;
 import gestionale.aziendale.enumm.TipoScadenza;
 import gestionale.aziendale.exception.BadRequEx;
 import gestionale.aziendale.exception.NotFound;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -27,7 +29,9 @@ public class MezzoService {
 
     public Mezzo save(MezzoDTO body){
         if(this.mezzoRepository.existsByTarga(body.targa())) throw new BadRequEx("la targa " + body.targa() + " è già in uso!");
+        Utente utenteLoggato = (Utente) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Mezzo nuovoMezzo= new Mezzo(body.targa(), body.marca(), body.modello(),body.tipo(), body.anno(), body.assicurazioneScadenza(),body.bolloScadenza(),body.revisioneScadenza());
+        nuovoMezzo.setUtente(utenteLoggato);
         Mezzo mezzoSalvato = this.mezzoRepository.save(nuovoMezzo);
 
         // qua devo salvare 3 tipi di scadenze co i metodi del service

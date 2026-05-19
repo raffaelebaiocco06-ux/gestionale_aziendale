@@ -38,6 +38,9 @@ public class Mezzo {
     private LocalDate bolloScadenza;
     @Column(nullable = false)
     private LocalDate revisioneScadenza;
+    @ManyToOne
+    @JoinColumn(name = "utente_id")
+    private Utente utente;
 
     public Mezzo(String targa, String marca, String modello, TipoMezzo tipo, Integer anno, LocalDate assicurazioneScadenza, LocalDate bolloScadenza, LocalDate revisioneScadenza) {
         this.targa = targa;

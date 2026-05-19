@@ -5,6 +5,7 @@ import gestionale.aziendale.exception.BadRequEx;
 import gestionale.aziendale.exception.NotFound;
 import gestionale.aziendale.login.UtenteDTO;
 import gestionale.aziendale.repository.UtenteRepository;
+import gestionale.aziendale.resend.EmailService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,16 +21,22 @@ public class UtenteService {
 
     private final UtenteRepository utenteRepository;
     private final PasswordEncoder bcrypt;
+    private final EmailService emailService;
 
-    public UtenteService(UtenteRepository utenteRepository, PasswordEncoder bcrypt) {
+    public UtenteService(UtenteRepository utenteRepository, PasswordEncoder bcrypt, EmailService emailService) {
         this.utenteRepository = utenteRepository;
         this.bcrypt = bcrypt;
+        this.emailService = emailService;
     }
 
     public Utente save(UtenteDTO body){
         if(this.utenteRepository.existsByEmail(body.email())) throw new BadRequEx("L'indirizzo email " + body.email() + " è già in uso!");
         Utente nuovoUtente= new Utente(body.nome(),body.cognome(),body.email(),this.bcrypt.encode(body.password()));
-        return utenteRepository.save(nuovoUtente);
+        Utente utenteSalvato = utenteRepository.save(nuovoUtente);
+
+        emailService.sendWelcomeEmail(utenteSalvato.getEmail(), utenteSalvato.getNome());
+
+        return utenteSalvato;
     }
 
     public Page<Utente> findAll(int page, int size, String sortBy) {
