@@ -9,7 +9,7 @@ import map from "../assets/mappa.jpg";
 function Home() {
   return (
     <main className="min-h-screen bg-slate-100 flex flex-col items-center justify-center p-8 gap-12">
-      <img className=" -mb-50 -mt-40  mx-auto" src={logo} alt="Logo gestionale" />
+      <img className="mx-auto" src={logo} alt="Logo gestionale" />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 w-full max-w-6xl">
         {/* dashboard */}
         <div className="flex flex-col items-center text-center">
