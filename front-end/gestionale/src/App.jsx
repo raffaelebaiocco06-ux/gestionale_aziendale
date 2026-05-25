@@ -5,6 +5,7 @@ import Register from "./Pagine/auth/Register";
 import Dashboard from "./Pagine/DashBoard";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
+import Mezzi from "./Pagine/Mezzi";
 function App() {
   return (
     <>
@@ -14,6 +15,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/registrazione" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/mezzi" element={<Mezzi />} />
       </Routes>
       <Footer />
     </>
