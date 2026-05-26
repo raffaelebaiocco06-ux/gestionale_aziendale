@@ -27,6 +27,12 @@ function Navbar() {
           <Link className="hover:text-emerald-400 transition" to="/scadenze">
             Scadenze
           </Link>
+          <Link className="hover:text-emerald-400 transition" to="/entrate">
+            Entrate
+          </Link>
+          <Link className="hover:text-emerald-400 transition" to="/uscite">
+            Uscite
+          </Link>
           <Link className="hover:text-emerald-400 transition" to="/mappe">
             Mappe
           </Link>

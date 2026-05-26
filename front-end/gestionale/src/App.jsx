@@ -6,6 +6,10 @@ import Dashboard from "./Pagine/DashBoard";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
 import Mezzi from "./Pagine/Mezzi";
+import Protetti from "./Pagine/Protetti";
+import Scadenze from "./Pagine/Scadenze";
+import Entrate from "./Pagine/Entrate";
+import Uscite from "./Pagine/Uscite";
 function App() {
   return (
     <>
@@ -14,8 +18,47 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registrazione" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/mezzi" element={<Mezzi />} />
+
+        <Route
+          path="/dashboard"
+          element={
+            <Protetti>
+              <Dashboard />
+            </Protetti>
+          }
+        />
+        <Route
+          path="/mezzi"
+          element={
+            <Protetti>
+              <Mezzi />
+            </Protetti>
+          }
+        />
+        <Route
+          path="/scadenze"
+          element={
+            <Protetti>
+              <Scadenze />
+            </Protetti>
+          }
+        />
+        <Route
+          path="/entrate"
+          element={
+            <Protetti>
+              <Entrate />
+            </Protetti>
+          }
+        />
+        <Route
+          path="/uscite"
+          element={
+            <Protetti>
+              <Uscite />
+            </Protetti>
+          }
+        />
       </Routes>
       <Footer />
     </>
