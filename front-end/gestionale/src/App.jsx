@@ -8,12 +8,13 @@ import Footer from "./Components/Footer";
 import Mezzi from "./Pagine/Mezzi";
 import Protetti from "./Pagine/Protetti";
 import Scadenze from "./Pagine/Scadenze";
-import Entrate from "./Pagine/Entrate";
-import Uscite from "./Pagine/Uscite";
+import Movimenti from "./Pagine/Movimenti";
+
 function App() {
   return (
     <>
       <Navbar />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -27,6 +28,7 @@ function App() {
             </Protetti>
           }
         />
+
         <Route
           path="/mezzi"
           element={
@@ -35,6 +37,7 @@ function App() {
             </Protetti>
           }
         />
+
         <Route
           path="/scadenze"
           element={
@@ -43,23 +46,17 @@ function App() {
             </Protetti>
           }
         />
+
         <Route
-          path="/entrate"
+          path="/movimenti"
           element={
             <Protetti>
-              <Entrate />
-            </Protetti>
-          }
-        />
-        <Route
-          path="/uscite"
-          element={
-            <Protetti>
-              <Uscite />
+              <Movimenti />
             </Protetti>
           }
         />
       </Routes>
+
       <Footer />
     </>
   );
