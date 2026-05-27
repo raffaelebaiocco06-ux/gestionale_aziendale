@@ -14,83 +14,106 @@ import Fornitori from "./Pagine/Fornitore";
 import Layout from "./Components/Layout";
 function App() {
   return (
-    <>
-      <Navbar />
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <>
+            <Navbar />
+            <Home />
+            <Footer />
+          </>
+        }
+      />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/registrazione" element={<Register />} />
+      <Route
+        path="/login"
+        element={
+          <>
+            <Navbar />
+            <Login />
+            <Footer />
+          </>
+        }
+      />
 
-        <Route
-          path="/dashboard"
-          element={
-            <Protetti>
-              <Layout>
-                <Dashboard />
-              </Layout>
-            </Protetti>
-          }
-        />
+      <Route
+        path="/registrazione"
+        element={
+          <>
+            <Navbar />
+            <Register />
+            <Footer />
+          </>
+        }
+      />
 
-        <Route
-          path="/mezzi"
-          element={
-            <Protetti>
-              <Layout>
-                <Mezzi />
-              </Layout>
-            </Protetti>
-          }
-        />
+      <Route
+        path="/dashboard"
+        element={
+          <Protetti>
+            <Layout>
+              <Dashboard />
+            </Layout>
+          </Protetti>
+        }
+      />
 
-        <Route
-          path="/scadenze"
-          element={
-            <Protetti>
-              <Layout>
-                <Scadenze />
-              </Layout>
-            </Protetti>
-          }
-        />
+      <Route
+        path="/movimenti"
+        element={
+          <Protetti>
+            <Layout>
+              <Movimenti />
+            </Layout>
+          </Protetti>
+        }
+      />
 
-        <Route
-          path="/movimenti"
-          element={
-            <Protetti>
-              <Layout>
-                <Movimenti />
-              </Layout>
-            </Protetti>
-          }
-        />
+      <Route
+        path="/clienti"
+        element={
+          <Protetti>
+            <Layout>
+              <Clienti />
+            </Layout>
+          </Protetti>
+        }
+      />
 
-        <Route
-          path="/clienti"
-          element={
-            <Protetti>
-              <Layout>
-                <Clienti />
-              </Layout>
-            </Protetti>
-          }
-        />
+      <Route
+        path="/fornitori"
+        element={
+          <Protetti>
+            <Layout>
+              <Fornitori />
+            </Layout>
+          </Protetti>
+        }
+      />
 
-        <Route
-          path="/fornitori"
-          element={
-            <Protetti>
-              <Layout>
-                <Fornitori />
-              </Layout>
-            </Protetti>
-          }
-        />
-      </Routes>
+      <Route
+        path="/mezzi"
+        element={
+          <Protetti>
+            <Layout>
+              <Mezzi />
+            </Layout>
+          </Protetti>
+        }
+      />
 
-      <Footer />
-    </>
+      <Route
+        path="/scadenze"
+        element={
+          <Protetti>
+            <Layout>
+              <Scadenze />
+            </Layout>
+          </Protetti>
+        }
+      />
+    </Routes>
   );
 }
 
