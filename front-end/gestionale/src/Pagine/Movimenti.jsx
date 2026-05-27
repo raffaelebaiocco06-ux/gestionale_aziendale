@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createMovimento, getMovimenti } from "../js/movimenti";
+import { createMovimento, getMovimenti, deleteMovimento } from "../js/movimenti";
 import { getCategorie } from "../js/categorie";
 import Modale from "../Components/Modale";
 
@@ -75,6 +75,20 @@ function Movimenti() {
     } catch (error) {
       console.error(error);
       setErrore("Errore durante il salvataggio del movimento");
+    }
+  };
+  const eliminaMovimento = async (id) => {
+    const conferma = window.confirm("Vuoi eliminare questo movimento?");
+
+    if (!conferma) return;
+
+    try {
+      await deleteMovimento(id);
+
+      setMovimenti((listaAttuale) => listaAttuale.filter((movimento) => movimento.id !== id));
+    } catch (error) {
+      console.error(error);
+      setErrore("Errore durante l'eliminazione del movimento");
     }
   };
 
@@ -159,6 +173,14 @@ function Movimenti() {
                     <td className="p-4">{movimento.dataMovimento}</td>
                     <td className="p-4">{movimento.metodoPagamento}</td>
                     <td className="p-4">{movimento.stato}</td>
+                    <td className="p-4">
+                      <button
+                        onClick={() => eliminaMovimento(movimento.id)}
+                        className="rounded-lg bg-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-red-400"
+                      >
+                        Elimina
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>

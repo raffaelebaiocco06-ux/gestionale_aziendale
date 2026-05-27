@@ -30,6 +30,9 @@ function Navbar() {
           <Link className="hover:text-emerald-400 transition" to="/movimenti">
             Movimenti
           </Link>
+          <Link className="hover:text-emerald-400 transition" to="/clienti">
+            Clienti
+          </Link>
           <Link className="hover:text-emerald-400 transition" to="/mappe">
             Mappe
           </Link>

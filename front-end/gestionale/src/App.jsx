@@ -9,7 +9,9 @@ import Mezzi from "./Pagine/Mezzi";
 import Protetti from "./Pagine/Protetti";
 import Scadenze from "./Pagine/Scadenze";
 import Movimenti from "./Pagine/Movimenti";
-
+import Clienti from "./Pagine/Clienti";
+import Fornitori from "./Pagine/Fornitore";
+import Layout from "./Components/Layout";
 function App() {
   return (
     <>
@@ -24,7 +26,9 @@ function App() {
           path="/dashboard"
           element={
             <Protetti>
-              <Dashboard />
+              <Layout>
+                <Dashboard />
+              </Layout>
             </Protetti>
           }
         />
@@ -33,7 +37,9 @@ function App() {
           path="/mezzi"
           element={
             <Protetti>
-              <Mezzi />
+              <Layout>
+                <Mezzi />
+              </Layout>
             </Protetti>
           }
         />
@@ -42,7 +48,9 @@ function App() {
           path="/scadenze"
           element={
             <Protetti>
-              <Scadenze />
+              <Layout>
+                <Scadenze />
+              </Layout>
             </Protetti>
           }
         />
@@ -51,7 +59,31 @@ function App() {
           path="/movimenti"
           element={
             <Protetti>
-              <Movimenti />
+              <Layout>
+                <Movimenti />
+              </Layout>
+            </Protetti>
+          }
+        />
+
+        <Route
+          path="/clienti"
+          element={
+            <Protetti>
+              <Layout>
+                <Clienti />
+              </Layout>
+            </Protetti>
+          }
+        />
+
+        <Route
+          path="/fornitori"
+          element={
+            <Protetti>
+              <Layout>
+                <Fornitori />
+              </Layout>
             </Protetti>
           }
         />

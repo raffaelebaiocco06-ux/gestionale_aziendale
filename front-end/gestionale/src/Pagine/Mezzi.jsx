@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMezzi } from "../js/mezzi";
+import { getMezzi, deleteMezzo } from "../js/mezzi";
 
 function Mezzi() {
   const [mezzi, setMezzi] = useState([]);
@@ -22,6 +22,19 @@ function Mezzi() {
 
     caricaMezzi();
   }, []);
+
+  const eliminaMezzo = async (id) => {
+    const conferma = window.confirm("Vuoi eliminare questo mezzo?");
+    if (!conferma) return;
+
+    try {
+      await deleteMezzo(id);
+      setMezzi((listaAttuale) => listaAttuale.filter((mezzo) => mezzo.id !== id));
+    } catch (error) {
+      console.error(error);
+      setErrore("Errore durante l'eliminazione del mezzo");
+    }
+  };
 
   const mezziFiltrati = mezzi.filter((mezzo) => {
     const testo = `
@@ -73,6 +86,7 @@ function Mezzi() {
                   <th className="p-4">Assicurazione</th>
                   <th className="p-4">Bollo</th>
                   <th className="p-4">Revisione</th>
+                  <th className="p-4">Azioni</th>
                 </tr>
               </thead>
 
@@ -87,6 +101,14 @@ function Mezzi() {
                     <td className="p-4">{mezzo.assicurazioneScadenza}</td>
                     <td className="p-4">{mezzo.bolloScadenza}</td>
                     <td className="p-4">{mezzo.revisioneScadenza}</td>
+                    <td className="p-4">
+                      <button
+                        onClick={() => eliminaMezzo(mezzo.id)}
+                        className="rounded-lg bg-red-500 px-3 py-2 text-sm font-semibold text-white hover:bg-red-400"
+                      >
+                        Elimina
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
