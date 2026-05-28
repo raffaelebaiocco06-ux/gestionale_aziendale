@@ -34,7 +34,7 @@ public class SecurityConfig {
         httpSecurity.formLogin(formLogin -> formLogin.disable());
         httpSecurity.csrf(csrf -> csrf.disable());// disabilitato perche si usa jwt
         httpSecurity.cors(cors -> {});
-        httpSecurity.authorizeHttpRequests(req -> req.requestMatchers("/auth/**").permitAll().anyRequest().authenticated());
+        httpSecurity.authorizeHttpRequests(req -> req.requestMatchers("/auth/**").permitAll().requestMatchers("/uploads/**").permitAll().anyRequest().authenticated());
         httpSecurity.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();

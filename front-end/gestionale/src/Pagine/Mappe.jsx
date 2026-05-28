@@ -4,7 +4,10 @@ import useImage from "use-image";
 import { getMappe, uploadMappa, getElementiMappa, createElementoMappa, updateElementoMappa, deleteElementoMappa } from "../js/mappe";
 
 function ImmagineSfondo({ src, width, height }) {
-  const [image] = useImage(src);
+  console.log("URL IMMAGINE MAPPA:", src);
+
+  const [image] = useImage(src, "anonymous");
+
   return <KonvaImage image={image} width={width} height={height} />;
 }
 
