@@ -13,6 +13,7 @@ import Clienti from "./Pagine/Clienti";
 import Fornitori from "./Pagine/Fornitore";
 import Layout from "./Components/Layout";
 import Progetti from "./Pagine/Progetti";
+import Mappe from "./Pagine/Mappe";
 function App() {
   return (
     <Routes>
@@ -120,6 +121,16 @@ function App() {
           <Protetti>
             <Layout>
               <Progetti />
+            </Layout>
+          </Protetti>
+        }
+      />
+      <Route
+        path="/mappe"
+        element={
+          <Protetti>
+            <Layout>
+              <Mappe />
             </Layout>
           </Protetti>
         }

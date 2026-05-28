@@ -41,6 +41,9 @@ function Sidebar() {
         <NavLink to="/scadenze" className={linkClass}>
           Scadenze
         </NavLink>
+        <NavLink to="/mappe" className={linkClass}>
+          Mappe
+        </NavLink>
       </nav>
     </aside>
   );
