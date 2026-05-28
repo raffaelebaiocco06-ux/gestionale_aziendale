@@ -12,6 +12,7 @@ import Movimenti from "./Pagine/Movimenti";
 import Clienti from "./Pagine/Clienti";
 import Fornitori from "./Pagine/Fornitore";
 import Layout from "./Components/Layout";
+import Progetti from "./Pagine/Progetti";
 function App() {
   return (
     <Routes>
@@ -109,6 +110,16 @@ function App() {
           <Protetti>
             <Layout>
               <Scadenze />
+            </Layout>
+          </Protetti>
+        }
+      />
+      <Route
+        path="/progetti"
+        element={
+          <Protetti>
+            <Layout>
+              <Progetti />
             </Layout>
           </Protetti>
         }

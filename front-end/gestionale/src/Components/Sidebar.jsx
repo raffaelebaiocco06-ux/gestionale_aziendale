@@ -30,6 +30,10 @@ function Sidebar() {
           Fornitori
         </NavLink>
 
+        <NavLink to="/progetti" className={linkClass}>
+          Progetti
+        </NavLink>
+
         <NavLink to="/mezzi" className={linkClass}>
           Mezzi
         </NavLink>
