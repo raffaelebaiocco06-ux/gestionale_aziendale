@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public record MovimentoDTO(
         @NotNull(message = "La categoria è obbligatoria")
-        UUID categoriaId,
+        String categoria,
 
         UUID clienteId,
 

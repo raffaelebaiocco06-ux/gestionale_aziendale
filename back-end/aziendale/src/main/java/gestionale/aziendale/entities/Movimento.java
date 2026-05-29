@@ -21,9 +21,8 @@ public class Movimento {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "categoria_id")
-    private Categoria categoria;
+    @Column(nullable = false)
+    private String categoria;
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
@@ -51,7 +50,7 @@ public class Movimento {
     @JoinColumn(name = "utente_id")
     private Utente utente;
 
-    public Movimento(Categoria categoria, Cliente cliente, Fornitore fornitore, Mezzo mezzo, TipoMovimento tipo, String descrizione, BigDecimal importo, LocalDate dataMovimento, MetodoPagamento metodoPagamento, StatoPagamento stato) {
+    public Movimento(String categoria, Cliente cliente, Fornitore fornitore, Mezzo mezzo, TipoMovimento tipo, String descrizione, BigDecimal importo, LocalDate dataMovimento, MetodoPagamento metodoPagamento, StatoPagamento stato) {
         this.categoria = categoria;
         this.cliente = cliente;
         this.fornitore = fornitore;

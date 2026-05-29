@@ -23,21 +23,20 @@ function Mezzi() {
 
   const estraiLista = (data) => data?.content || data || [];
 
-  const caricaMezzi = async () => {
-    try {
-      setLoading(true);
-      setErrore("");
-      const risposta = await getMezzi();
-      setMezzi(estraiLista(risposta.data));
-    } catch (error) {
-      console.error(error);
-      setErrore("Errore durante il caricamento dei mezzi");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const caricaMezzi = async () => {
+      try {
+        setLoading(true);
+        setErrore("");
+        const risposta = await getMezzi();
+        setMezzi(estraiLista(risposta.data));
+      } catch (error) {
+        console.error(error);
+        setErrore("Errore durante il caricamento dei mezzi");
+      } finally {
+        setLoading(false);
+      }
+    };
     caricaMezzi();
   }, []);
 

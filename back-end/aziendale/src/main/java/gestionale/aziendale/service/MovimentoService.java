@@ -1,14 +1,10 @@
 package gestionale.aziendale.service;
 
 import gestionale.aziendale.entities.*;
-import gestionale.aziendale.exception.BadRequEx;
 import gestionale.aziendale.exception.NotFound;
 import gestionale.aziendale.payload.MovimentoDTO;
 import gestionale.aziendale.repository.MovimentoRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -17,7 +13,6 @@ import java.util.UUID;
 public class MovimentoService {
 
     private final MovimentoRepository movimentoRepository;
-    private final CategoriaService categoriaService;
     private final ClienteService clienteService;
     private final FornitoreService fornitoreService;
     private final MezzoService mezzoService;
@@ -25,14 +20,12 @@ public class MovimentoService {
 
     public MovimentoService(
             MovimentoRepository movimentoRepository,
-            CategoriaService categoriaService,
             ClienteService clienteService,
             FornitoreService fornitoreService,
             MezzoService mezzoService,
             CurrentUserService currentUserService
     ) {
         this.movimentoRepository = movimentoRepository;
-        this.categoriaService = categoriaService;
         this.clienteService = clienteService;
         this.fornitoreService = fornitoreService;
         this.mezzoService = mezzoService;
@@ -40,31 +33,26 @@ public class MovimentoService {
     }
 
     public Movimento save(MovimentoDTO body) {
+
         Utente utente = currentUserService.getUtenteLoggato();
-
-        Categoria categoria = this.categoriaService.findById(body.categoriaId());
-
-        if (!categoria.getTipo().name().equals(body.tipo().name())) {
-            throw new BadRequEx("Il tipo del movimento non corrisponde al tipo della categoria");
-        }
 
         Cliente cliente = null;
         if (body.clienteId() != null) {
-            cliente = this.clienteService.findById(body.clienteId());
+            cliente = clienteService.findById(body.clienteId());
         }
 
         Fornitore fornitore = null;
         if (body.fornitoreId() != null) {
-            fornitore = this.fornitoreService.findById(body.fornitoreId());
+            fornitore = fornitoreService.findById(body.fornitoreId());
         }
 
         Mezzo mezzo = null;
         if (body.mezzoId() != null) {
-            mezzo = this.mezzoService.findById(body.mezzoId());
+            mezzo = mezzoService.findById(body.mezzoId());
         }
 
         Movimento nuovoMovimento = new Movimento(
-                categoria,
+                body.categoria(),
                 cliente,
                 fornitore,
                 mezzo,
@@ -78,52 +66,58 @@ public class MovimentoService {
 
         nuovoMovimento.setUtente(utente);
 
-        return this.movimentoRepository.save(nuovoMovimento);
+        return movimentoRepository.save(nuovoMovimento);
     }
 
     public Page<Movimento> findAll(int page, int size, String sortBy) {
+
         if (size > 100 || size <= 0) size = 10;
         if (page < 0) page = 0;
 
         Utente utente = currentUserService.getUtenteLoggato();
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(sortBy)
+        );
 
-        return this.movimentoRepository.findByUtenteId(utente.getId(), pageable);
+        return movimentoRepository.findByUtenteId(
+                utente.getId(),
+                pageable
+        );
     }
 
     public Movimento findById(UUID id) {
+
         Utente utente = currentUserService.getUtenteLoggato();
 
-        return this.movimentoRepository.findByIdAndUtenteId(id, utente.getId())
-                .orElseThrow(() -> new NotFound("Movimento con id " + id + " non trovato"));
+        return movimentoRepository
+                .findByIdAndUtenteId(id, utente.getId())
+                .orElseThrow(() ->
+                        new NotFound("Movimento con id " + id + " non trovato"));
     }
 
     public Movimento findByIdAndUpdate(UUID id, MovimentoDTO body) {
-        Movimento trovato = this.findById(id);
 
-        Categoria categoria = this.categoriaService.findById(body.categoriaId());
-
-        if (!categoria.getTipo().name().equals(body.tipo().name())) {
-            throw new BadRequEx("Il tipo del movimento non corrisponde al tipo della categoria");
-        }
+        Movimento trovato = findById(id);
 
         Cliente cliente = null;
         if (body.clienteId() != null) {
-            cliente = this.clienteService.findById(body.clienteId());
+            cliente = clienteService.findById(body.clienteId());
         }
 
         Fornitore fornitore = null;
         if (body.fornitoreId() != null) {
-            fornitore = this.fornitoreService.findById(body.fornitoreId());
+            fornitore = fornitoreService.findById(body.fornitoreId());
         }
 
         Mezzo mezzo = null;
         if (body.mezzoId() != null) {
-            mezzo = this.mezzoService.findById(body.mezzoId());
+            mezzo = mezzoService.findById(body.mezzoId());
         }
 
-        trovato.setCategoria(categoria);
+        trovato.setCategoria(body.categoria());
         trovato.setCliente(cliente);
         trovato.setFornitore(fornitore);
         trovato.setMezzo(mezzo);
@@ -134,11 +128,11 @@ public class MovimentoService {
         trovato.setMetodoPagamento(body.metodoPagamento());
         trovato.setStato(body.stato());
 
-        return this.movimentoRepository.save(trovato);
+        return movimentoRepository.save(trovato);
     }
 
     public void findByIdAndDelete(UUID id) {
-        Movimento trovato = this.findById(id);
-        this.movimentoRepository.delete(trovato);
+        Movimento trovato = findById(id);
+        movimentoRepository.delete(trovato);
     }
 }

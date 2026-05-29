@@ -13,11 +13,10 @@ function Fornitori() {
   const formVuoto = {
     nome: "",
     partitaIva: "",
-    codiceFiscale: "",
     telefono: "",
     email: "",
     indirizzo: "",
-    citta: "",
+    categoria: "",
   };
 
   const [form, setForm] = useState(formVuoto);
@@ -57,11 +56,10 @@ function Fornitori() {
     setForm({
       nome: fornitore.nome || "",
       partitaIva: fornitore.partitaIva || "",
-      codiceFiscale: fornitore.codiceFiscale || "",
       telefono: fornitore.telefono || "",
       email: fornitore.email || "",
       indirizzo: fornitore.indirizzo || "",
-      citta: fornitore.citta || "",
+      categoria: fornitore.categoria || "",
     });
 
     setModaleAperta(true);
@@ -71,12 +69,21 @@ function Fornitori() {
     e.preventDefault();
 
     try {
+      const datiDaInviare = {
+        nome: form.nome,
+        partitaIva: form.partitaIva,
+        telefono: form.telefono,
+        email: form.email,
+        indirizzo: form.indirizzo,
+        categoria: form.categoria,
+      };
+
       if (fornitoreInModifica) {
-        const risposta = await updateFornitore(fornitoreInModifica.id, form);
+        const risposta = await updateFornitore(fornitoreInModifica.id, datiDaInviare);
 
         setFornitori((listaAttuale) => listaAttuale.map((fornitore) => (fornitore.id === fornitoreInModifica.id ? risposta.data : fornitore)));
       } else {
-        const risposta = await createFornitore(form);
+        const risposta = await createFornitore(datiDaInviare);
         setFornitori((listaAttuale) => [...listaAttuale, risposta.data]);
       }
 
@@ -108,11 +115,10 @@ function Fornitori() {
     const testo = `
       ${fornitore.nome || ""}
       ${fornitore.partitaIva || ""}
-      ${fornitore.codiceFiscale || ""}
       ${fornitore.telefono || ""}
       ${fornitore.email || ""}
       ${fornitore.indirizzo || ""}
-      ${fornitore.citta || ""}
+      ${fornitore.categoria || ""}
     `.toLowerCase();
 
     return testo.includes(cerca.toLowerCase());
@@ -152,10 +158,10 @@ function Fornitori() {
                 <tr>
                   <th className="p-4">Nome</th>
                   <th className="p-4">Partita IVA</th>
-                  <th className="p-4">Codice fiscale</th>
                   <th className="p-4">Telefono</th>
                   <th className="p-4">Email</th>
-                  <th className="p-4">Città</th>
+                  <th className="p-4">Indirizzo</th>
+                  <th className="p-4">Categoria</th>
                   <th className="p-4">Azioni</th>
                 </tr>
               </thead>
@@ -165,10 +171,10 @@ function Fornitori() {
                   <tr key={fornitore.id} className="border-b hover:bg-slate-50">
                     <td className="p-4 font-semibold">{fornitore.nome}</td>
                     <td className="p-4">{fornitore.partitaIva}</td>
-                    <td className="p-4">{fornitore.codiceFiscale}</td>
                     <td className="p-4">{fornitore.telefono}</td>
                     <td className="p-4">{fornitore.email}</td>
-                    <td className="p-4">{fornitore.citta}</td>
+                    <td className="p-4">{fornitore.indirizzo}</td>
+                    <td className="p-4">{fornitore.categoria}</td>
                     <td className="p-4">
                       <div className="flex gap-2">
                         <button
@@ -213,15 +219,7 @@ function Fornitori() {
                 value={form.partitaIva}
                 onChange={cambiaValore}
                 className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500"
-              />
-
-              <input
-                type="text"
-                name="codiceFiscale"
-                placeholder="Codice fiscale"
-                value={form.codiceFiscale}
-                onChange={cambiaValore}
-                className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500"
+                required
               />
 
               <input
@@ -231,6 +229,7 @@ function Fornitori() {
                 value={form.telefono}
                 onChange={cambiaValore}
                 className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500"
+                required
               />
 
               <input
@@ -240,6 +239,7 @@ function Fornitori() {
                 value={form.email}
                 onChange={cambiaValore}
                 className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500"
+                required
               />
 
               <input
@@ -249,15 +249,17 @@ function Fornitori() {
                 value={form.indirizzo}
                 onChange={cambiaValore}
                 className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500"
+                required
               />
 
               <input
                 type="text"
-                name="citta"
-                placeholder="Città"
-                value={form.citta}
+                name="categoria"
+                placeholder="Categoria es. Materiali, Servizi, Trasporti..."
+                value={form.categoria}
                 onChange={cambiaValore}
                 className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500"
+                required
               />
 
               <button type="submit" className="w-full rounded-xl bg-emerald-500 py-3 font-semibold text-white hover:bg-emerald-400">

@@ -18,31 +18,23 @@ public interface MovimentoRepository extends JpaRepository<Movimento, UUID> {
 
     Page<Movimento> findByUtenteId(UUID utenteId, Pageable pageable);
 
+    List<Movimento> findByUtenteId(UUID utenteId);
+
     Optional<Movimento> findByIdAndUtenteId(UUID id, UUID utenteId);
 
     List<Movimento> findByTipoAndUtenteId(TipoMovimento tipo, UUID utenteId);
 
     List<Movimento> findByStatoAndUtenteId(StatoPagamento stato, UUID utenteId);
 
-    List<Movimento> findByCategoriaIdAndUtenteId(UUID categoriaId, UUID utenteId);
+    List<Movimento> findByCategoriaContainingIgnoreCaseAndUtenteId(String categoria, UUID utenteId);
 
     List<Movimento> findByClienteIdAndUtenteId(UUID clienteId, UUID utenteId);
 
     List<Movimento> findByFornitoreIdAndUtenteId(UUID fornitoreId, UUID utenteId);
 
     List<Movimento> findByMezzoIdAndUtenteId(UUID mezzoId, UUID utenteId);
-    List<Movimento> findByUtenteId(UUID utenteId);
 
-    List<Movimento> findByDataMovimentoBetweenAndUtenteId(
-            LocalDate start,
-            LocalDate end,
-            UUID utenteId
-    );
+    List<Movimento> findByDataMovimentoBetweenAndUtenteId(LocalDate start, LocalDate end, UUID utenteId);
 
-    List<Movimento> findByTipoAndDataMovimentoBetweenAndUtenteId(
-            TipoMovimento tipo,
-            LocalDate start,
-            LocalDate end,
-            UUID utenteId
-    );
+    List<Movimento> findByTipoAndDataMovimentoBetweenAndUtenteId(TipoMovimento tipo, LocalDate start, LocalDate end, UUID utenteId);
 }
