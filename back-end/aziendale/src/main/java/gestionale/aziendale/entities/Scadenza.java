@@ -23,8 +23,10 @@ public class Scadenza {
 
     @Column(nullable = false)
     private String titolo;
+
     @Column(nullable = false)
     private String descrizione;
+
     @Column(nullable = false)
     private LocalDate dataScadenza;
 
@@ -39,6 +41,10 @@ public class Scadenza {
     @ManyToOne
     @JoinColumn(name = "mezzo_id")
     private Mezzo mezzo;
+
+    @ManyToOne
+    @JoinColumn(name = "utente_id")
+    private Utente utente;
 
     public Scadenza(String titolo, String descrizione, LocalDate dataScadenza, TipoScadenza tipo, StatoScadenza stato, Mezzo mezzo) {
         this.titolo = titolo;

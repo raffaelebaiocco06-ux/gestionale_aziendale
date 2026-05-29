@@ -47,6 +47,10 @@ public class Movimento {
     @Enumerated(EnumType.STRING)
     private StatoPagamento stato;
 
+    @ManyToOne
+    @JoinColumn(name = "utente_id")
+    private Utente utente;
+
     public Movimento(Categoria categoria, Cliente cliente, Fornitore fornitore, Mezzo mezzo, TipoMovimento tipo, String descrizione, BigDecimal importo, LocalDate dataMovimento, MetodoPagamento metodoPagamento, StatoPagamento stato) {
         this.categoria = categoria;
         this.cliente = cliente;

@@ -22,7 +22,7 @@ public class MezzoController {
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public Mezzo save(@RequestBody @Validated MezzoDTO body) {
         return this.mezzoService.save(body);
     }
@@ -44,13 +44,13 @@ public class MezzoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public Mezzo findByIdAndUpdate(@PathVariable UUID id, @RequestBody @Validated MezzoDTO body) {
         return this.mezzoService.findByIdAndUpdate(id, body);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void findByIdAndDelete(@PathVariable UUID id) {
         this.mezzoService.findByIdAndDelete(id);

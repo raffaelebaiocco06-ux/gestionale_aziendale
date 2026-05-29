@@ -1,6 +1,8 @@
 package gestionale.aziendale.repository;
 
 import gestionale.aziendale.entities.Cliente;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -9,15 +11,20 @@ import java.util.UUID;
 
 public interface ClienteRepository extends JpaRepository<Cliente, UUID> {
 
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndUtenteId(String email, UUID utenteId);
 
-    boolean existsByPartitaIva(String partitaIva);
+    boolean existsByPartitaIvaAndUtenteId(String partitaIva, UUID utenteId);
 
-    boolean existsByCodiceFiscale(String codiceFiscale);
+    boolean existsByCodiceFiscaleAndUtenteId(String codiceFiscale, UUID utenteId);
 
-    Optional<Cliente> findByEmail(String email);
+    Optional<Cliente> findByIdAndUtenteId(UUID id, UUID utenteId);
 
-    Optional<Cliente> findByPartitaIva(String partitaIva);
+    Optional<Cliente> findByEmailAndUtenteId(String email, UUID utenteId);
 
-    List<Cliente> findByNomeContainingIgnoreCase(String nome);
+    Optional<Cliente> findByPartitaIvaAndUtenteId(String partitaIva, UUID utenteId);
+
+    Page<Cliente> findByUtenteId(UUID utenteId, Pageable pageable);
+
+    List<Cliente> findByNomeContainingIgnoreCaseAndUtenteId(String nome, UUID utenteId);
+    List<Cliente> findByUtenteId(UUID utenteId);
 }

@@ -1,6 +1,8 @@
 package gestionale.aziendale.repository;
 
 import gestionale.aziendale.entities.Fornitore;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -9,15 +11,20 @@ import java.util.UUID;
 
 public interface FornitoreRepository extends JpaRepository<Fornitore, UUID> {
 
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndUtenteId(String email, UUID utenteId);
 
-    boolean existsByPartitaIva(String partitaIva);
+    boolean existsByPartitaIvaAndUtenteId(String partitaIva, UUID utenteId);
 
-    Optional<Fornitore> findByEmail(String email);
+    Optional<Fornitore> findByIdAndUtenteId(UUID id, UUID utenteId);
 
-    Optional<Fornitore> findByPartitaIva(String partitaIva);
+    Optional<Fornitore> findByEmailAndUtenteId(String email, UUID utenteId);
 
-    List<Fornitore> findByNomeContainingIgnoreCase(String nome);
+    Optional<Fornitore> findByPartitaIvaAndUtenteId(String partitaIva, UUID utenteId);
 
-    List<Fornitore> findByCategoriaContainingIgnoreCase(String categoria);
+    Page<Fornitore> findByUtenteId(UUID utenteId, Pageable pageable);
+
+    List<Fornitore> findByNomeContainingIgnoreCaseAndUtenteId(String nome, UUID utenteId);
+
+    List<Fornitore> findByCategoriaContainingIgnoreCaseAndUtenteId(String categoria, UUID utenteId);
+    List<Fornitore> findByUtenteId(UUID utenteId);
 }

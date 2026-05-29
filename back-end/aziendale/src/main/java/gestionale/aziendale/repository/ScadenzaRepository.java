@@ -3,6 +3,8 @@ package gestionale.aziendale.repository;
 import gestionale.aziendale.entities.Scadenza;
 import gestionale.aziendale.enumm.StatoScadenza;
 import gestionale.aziendale.enumm.TipoScadenza;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
@@ -12,17 +14,21 @@ import java.util.UUID;
 
 public interface ScadenzaRepository extends JpaRepository<Scadenza, UUID> {
 
-    List<Scadenza> findByMezzoId(UUID mezzoId);
+    List<Scadenza> findByUtenteId(UUID utenteId);
 
-    List<Scadenza> findByStato(StatoScadenza stato);
+    Page<Scadenza> findByUtenteId(UUID utenteId, Pageable pageable);
 
-    List<Scadenza> findByTipo(TipoScadenza tipo);
+    Optional<Scadenza> findByIdAndUtenteId(UUID id, UUID utenteId);
 
-    List<Scadenza> findByDataScadenzaBefore(LocalDate data);
+    List<Scadenza> findByStatoAndUtenteId(StatoScadenza stato, UUID utenteId);
 
-    List<Scadenza> findByDataScadenzaBetween(LocalDate start, LocalDate end);
+    List<Scadenza> findByTipoAndUtenteId(TipoScadenza tipo, UUID utenteId);
 
-    Optional<Scadenza> findByMezzoIdAndTipo(UUID mezzoId, TipoScadenza tipo);
+    List<Scadenza> findByMezzoIdAndUtenteId(UUID mezzoId, UUID utenteId);
 
     List<Scadenza> findByDataScadenza(LocalDate dataScadenza);
+
+    List<Scadenza> findByDataScadenzaBeforeAndUtenteId(LocalDate data, UUID utenteId);
+
+    List<Scadenza> findByDataScadenzaBetweenAndUtenteId(LocalDate start, LocalDate end, UUID utenteId);
 }

@@ -7,7 +7,6 @@ import gestionale.aziendale.enumm.TipoElementoMappa;
 import gestionale.aziendale.payload.ElementoMappaDTO;
 import gestionale.aziendale.payload.GeneraGrigliaDTO;
 import gestionale.aziendale.repository.ElementoMappaRepository;
-import gestionale.aziendale.repository.MappaFieraRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,19 +17,18 @@ import java.util.UUID;
 public class ElementoMappaService {
 
     private final ElementoMappaRepository elementoMappaRepository;
-    private final MappaFieraRepository mappaFieraRepository;
+    private final MappaFieraService mappaFieraService;
 
     public ElementoMappaService(
             ElementoMappaRepository elementoMappaRepository,
-            MappaFieraRepository mappaFieraRepository
+            MappaFieraService mappaFieraService
     ) {
         this.elementoMappaRepository = elementoMappaRepository;
-        this.mappaFieraRepository = mappaFieraRepository;
+        this.mappaFieraService = mappaFieraService;
     }
 
     public ElementoMappa creaElemento(UUID mappaId, ElementoMappaDTO dto) {
-        MappaFiera mappa = mappaFieraRepository.findById(mappaId)
-                .orElseThrow(() -> new RuntimeException("Mappa fiera non trovata"));
+        MappaFiera mappa = mappaFieraService.trovaPerId(mappaId);
 
         ElementoMappa elemento = new ElementoMappa();
 
@@ -48,11 +46,16 @@ public class ElementoMappaService {
     }
 
     public List<ElementoMappa> trovaElementiPerMappa(UUID mappaId) {
-        return elementoMappaRepository.findByMappaFieraId(mappaId);
+        MappaFiera mappa = mappaFieraService.trovaPerId(mappaId);
+
+        return elementoMappaRepository.findByMappaFieraId(mappa.getId());
     }
 
     public ElementoMappa aggiornaElemento(UUID elementoId, ElementoMappaDTO dto) {
-        ElementoMappa elemento = elementoMappaRepository.findById(elementoId).orElseThrow(() -> new RuntimeException("Elemento mappa non trovato"));
+        ElementoMappa elemento = elementoMappaRepository.findById(elementoId)
+                .orElseThrow(() -> new RuntimeException("Elemento mappa non trovato"));
+
+        mappaFieraService.trovaPerId(elemento.getMappaFiera().getId());
 
         elemento.setNome(dto.nome());
         elemento.setTipo(dto.tipo());
@@ -67,13 +70,16 @@ public class ElementoMappaService {
     }
 
     public void eliminaElemento(UUID elementoId) {
-        ElementoMappa elemento = elementoMappaRepository.findById(elementoId).orElseThrow(() -> new RuntimeException("Elemento mappa non trovato"));
+        ElementoMappa elemento = elementoMappaRepository.findById(elementoId)
+                .orElseThrow(() -> new RuntimeException("Elemento mappa non trovato"));
+
+        mappaFieraService.trovaPerId(elemento.getMappaFiera().getId());
 
         elementoMappaRepository.delete(elemento);
     }
 
     public List<ElementoMappa> generaGriglia(UUID mappaId, GeneraGrigliaDTO dto) {
-        MappaFiera mappa = mappaFieraRepository.findById(mappaId).orElseThrow(() -> new RuntimeException("Mappa fiera non trovata"));
+        MappaFiera mappa = mappaFieraService.trovaPerId(mappaId);
 
         List<ElementoMappa> elementi = new ArrayList<>();
 

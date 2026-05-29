@@ -25,7 +25,7 @@ public class CategoriaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public Categoria save(@RequestBody @Valid CategoriaDTO body) {
         return this.categoriaService.save(body);
     }
@@ -59,14 +59,14 @@ public class CategoriaController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public Categoria update(@PathVariable UUID id, @RequestBody @Valid CategoriaDTO body) {
         return this.categoriaService.findByIdAndUpdate(id, body);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public void delete(@PathVariable UUID id) {
         this.categoriaService.findByIdAndDelete(id);
     }

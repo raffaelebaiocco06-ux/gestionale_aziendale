@@ -40,6 +40,10 @@ public class Progetto {
     @Column(nullable = false)
     private BigDecimal budget;
 
+    @ManyToOne
+    @JoinColumn(name = "utente_id")
+    private Utente utente;
+
     public Progetto(String nome, String descrizione, Cliente cliente, LocalDate dataInizio, LocalDate dataFine, StatoProgetto stato, BigDecimal budget) {
         this.nome = nome;
         this.descrizione = descrizione;

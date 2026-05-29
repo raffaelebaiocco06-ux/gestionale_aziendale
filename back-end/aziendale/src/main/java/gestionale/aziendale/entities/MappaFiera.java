@@ -32,6 +32,10 @@ public class MappaFiera {
     @OneToMany(mappedBy = "mappaFiera", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ElementoMappa> elementi = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "utente_id")
+    private Utente utente;
+
     public MappaFiera(String nome, String fileUrl, Integer larghezzaOriginale, Integer altezzaOriginale, List<ElementoMappa> elementi) {
         this.nome = nome;
         this.fileUrl = fileUrl;

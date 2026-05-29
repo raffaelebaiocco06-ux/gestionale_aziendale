@@ -27,7 +27,8 @@ public class ScadenzaController {
     public Page<Scadenza> getScadenze(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "dataScadenza") String sortBy) {
+            @RequestParam(defaultValue = "dataScadenza") String sortBy
+    ) {
         return this.scadenzaService.findAll(page, size, sortBy);
     }
 
@@ -39,20 +40,23 @@ public class ScadenzaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public Scadenza saveScadenza(@RequestBody @Valid ScadenzaDTO body) {
         return this.scadenzaService.save(body);
     }
 
     @PutMapping("/{scadenzaId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public Scadenza updateScadenza(@PathVariable UUID scadenzaId, @RequestBody @Valid ScadenzaDTO body) {
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
+    public Scadenza updateScadenza(
+            @PathVariable UUID scadenzaId,
+            @RequestBody @Valid ScadenzaDTO body
+    ) {
         return this.scadenzaService.findByIdAndUpdate(scadenzaId, body);
     }
 
     @DeleteMapping("/{scadenzaId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public void deleteScadenza(@PathVariable UUID scadenzaId) {
         this.scadenzaService.findByIdAndDelete(scadenzaId);
     }

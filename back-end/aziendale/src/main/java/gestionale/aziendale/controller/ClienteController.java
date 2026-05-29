@@ -24,7 +24,7 @@ public class ClienteController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public Cliente save(@RequestBody @Valid ClienteDTO body) {
         return this.clienteService.save(body);
     }
@@ -64,14 +64,14 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public Cliente update(@PathVariable UUID id, @RequestBody @Valid ClienteDTO body) {
         return this.clienteService.findByIdAndUpdate(id, body);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public void delete(@PathVariable UUID id) {
         this.clienteService.findByIdAndDelete(id);
     }

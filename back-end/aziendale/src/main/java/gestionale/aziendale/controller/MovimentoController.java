@@ -23,7 +23,7 @@ public class MovimentoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public Movimento save(@RequestBody @Valid MovimentoDTO body) {
         return this.movimentoService.save(body);
     }
@@ -45,14 +45,14 @@ public class MovimentoController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public Movimento update(@PathVariable UUID id, @RequestBody @Valid MovimentoDTO body) {
         return this.movimentoService.findByIdAndUpdate(id, body);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public void delete(@PathVariable UUID id) {
         this.movimentoService.findByIdAndDelete(id);
     }

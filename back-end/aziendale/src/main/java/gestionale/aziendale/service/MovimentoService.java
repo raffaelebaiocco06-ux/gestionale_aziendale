@@ -12,22 +12,35 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+
 @Service
 public class MovimentoService {
+
     private final MovimentoRepository movimentoRepository;
     private final CategoriaService categoriaService;
     private final ClienteService clienteService;
     private final FornitoreService fornitoreService;
     private final MezzoService mezzoService;
+    private final CurrentUserService currentUserService;
 
-    public MovimentoService(MovimentoRepository movimentoRepository, CategoriaService categoriaService, ClienteService clienteService, FornitoreService fornitoreService, MezzoService mezzoService) {
+    public MovimentoService(
+            MovimentoRepository movimentoRepository,
+            CategoriaService categoriaService,
+            ClienteService clienteService,
+            FornitoreService fornitoreService,
+            MezzoService mezzoService,
+            CurrentUserService currentUserService
+    ) {
         this.movimentoRepository = movimentoRepository;
         this.categoriaService = categoriaService;
         this.clienteService = clienteService;
         this.fornitoreService = fornitoreService;
         this.mezzoService = mezzoService;
+        this.currentUserService = currentUserService;
     }
+
     public Movimento save(MovimentoDTO body) {
+        Utente utente = currentUserService.getUtenteLoggato();
 
         Categoria categoria = this.categoriaService.findById(body.categoriaId());
 
@@ -50,7 +63,20 @@ public class MovimentoService {
             mezzo = this.mezzoService.findById(body.mezzoId());
         }
 
-        Movimento nuovoMovimento = new Movimento(categoria, cliente, fornitore, mezzo, body.tipo(), body.descrizione(), body.importo(), body.dataMovimento(), body.metodoPagamento(), body.stato());
+        Movimento nuovoMovimento = new Movimento(
+                categoria,
+                cliente,
+                fornitore,
+                mezzo,
+                body.tipo(),
+                body.descrizione(),
+                body.importo(),
+                body.dataMovimento(),
+                body.metodoPagamento(),
+                body.stato()
+        );
+
+        nuovoMovimento.setUtente(utente);
 
         return this.movimentoRepository.save(nuovoMovimento);
     }
@@ -59,17 +85,21 @@ public class MovimentoService {
         if (size > 100 || size <= 0) size = 10;
         if (page < 0) page = 0;
 
+        Utente utente = currentUserService.getUtenteLoggato();
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        return this.movimentoRepository.findAll(pageable);
+
+        return this.movimentoRepository.findByUtenteId(utente.getId(), pageable);
     }
 
     public Movimento findById(UUID id) {
-        return this.movimentoRepository.findById(id)
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        return this.movimentoRepository.findByIdAndUtenteId(id, utente.getId())
                 .orElseThrow(() -> new NotFound("Movimento con id " + id + " non trovato"));
     }
 
     public Movimento findByIdAndUpdate(UUID id, MovimentoDTO body) {
-
         Movimento trovato = this.findById(id);
 
         Categoria categoria = this.categoriaService.findById(body.categoriaId());

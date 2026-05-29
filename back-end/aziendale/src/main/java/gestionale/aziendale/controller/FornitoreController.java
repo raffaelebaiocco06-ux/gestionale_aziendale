@@ -24,7 +24,7 @@ public class FornitoreController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public Fornitore save(@RequestBody @Valid FornitoreDTO body) {
         return this.fornitoreService.save(body);
     }
@@ -70,14 +70,14 @@ public class FornitoreController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public Fornitore update(@PathVariable UUID id, @RequestBody @Valid FornitoreDTO body) {
         return this.fornitoreService.findByIdAndUpdate(id, body);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'OPERATORE')")
     public void delete(@PathVariable UUID id) {
         this.fornitoreService.findByIdAndDelete(id);
     }

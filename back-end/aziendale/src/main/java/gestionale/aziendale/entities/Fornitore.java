@@ -31,6 +31,10 @@ public class Fornitore {
     @Column(nullable = false)
     private String categoria;
 
+    @ManyToOne
+    @JoinColumn(name = "utente_id")
+    private Utente utente;
+
     public Fornitore(String nome, String partitaIva, String telefono, String email, String indirizzo, String categoria) {
         this.nome = nome;
         this.partitaIva = partitaIva;

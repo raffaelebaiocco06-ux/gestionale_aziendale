@@ -1,6 +1,7 @@
 package gestionale.aziendale.service;
 
 import gestionale.aziendale.entities.Cliente;
+import gestionale.aziendale.entities.Utente;
 import gestionale.aziendale.exception.BadRequEx;
 import gestionale.aziendale.exception.NotFound;
 import gestionale.aziendale.payload.ClienteDTO;
@@ -15,59 +16,83 @@ import java.util.UUID;
 public class ClienteService {
 
     private final ClienteRepository clienteRepository;
+    private final CurrentUserService currentUserService;
 
-    public ClienteService(ClienteRepository clienteRepository) {
+    public ClienteService(
+            ClienteRepository clienteRepository,
+            CurrentUserService currentUserService
+    ) {
         this.clienteRepository = clienteRepository;
+        this.currentUserService = currentUserService;
     }
 
     public Cliente save(ClienteDTO body) {
-        if (this.clienteRepository.existsByEmail(body.email())) {
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        if (clienteRepository.existsByEmailAndUtenteId(body.email(), utente.getId())) {
             throw new BadRequEx("L'email " + body.email() + " è già in uso!");
         }
 
-        if (this.clienteRepository.existsByPartitaIva(body.partitaIva())) {
+        if (clienteRepository.existsByPartitaIvaAndUtenteId(body.partitaIva(), utente.getId())) {
             throw new BadRequEx("La partita IVA " + body.partitaIva() + " è già in uso!");
         }
 
-        if (this.clienteRepository.existsByCodiceFiscale(body.codiceFiscale())) {
+        if (clienteRepository.existsByCodiceFiscaleAndUtenteId(body.codiceFiscale(), utente.getId())) {
             throw new BadRequEx("Il codice fiscale " + body.codiceFiscale() + " è già in uso!");
         }
 
-        Cliente nuovoCliente = new Cliente(body.nome(), body.partitaIva(), body.codiceFiscale(), body.telefono(), body.email(), body.indirizzo(), body.citta());
+        Cliente nuovoCliente = new Cliente(
+                body.nome(),
+                body.partitaIva(),
+                body.codiceFiscale(),
+                body.telefono(),
+                body.email(),
+                body.indirizzo(),
+                body.citta()
+        );
 
-        return this.clienteRepository.save(nuovoCliente);
+        nuovoCliente.setUtente(utente);
+
+        return clienteRepository.save(nuovoCliente);
     }
 
     public Page<Cliente> findAll(int page, int size, String sortBy) {
         if (size > 100 || size <= 0) size = 10;
         if (page < 0) page = 0;
 
+        Utente utente = currentUserService.getUtenteLoggato();
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        return this.clienteRepository.findAll(pageable);
+
+        return clienteRepository.findByUtenteId(utente.getId(), pageable);
     }
 
     public Cliente findById(UUID id) {
-        return this.clienteRepository.findById(id)
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        return clienteRepository.findByIdAndUtenteId(id, utente.getId())
                 .orElseThrow(() -> new NotFound("Cliente con id " + id + " non trovato"));
     }
 
     public Cliente findByIdAndUpdate(UUID id, ClienteDTO body) {
-        Cliente trovato = this.findById(id);
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        Cliente trovato = findById(id);
 
         if (!trovato.getEmail().equalsIgnoreCase(body.email())) {
-            if (this.clienteRepository.existsByEmail(body.email())) {
+            if (clienteRepository.existsByEmailAndUtenteId(body.email(), utente.getId())) {
                 throw new BadRequEx("L'email " + body.email() + " è già in uso!");
             }
         }
 
         if (!trovato.getPartitaIva().equalsIgnoreCase(body.partitaIva())) {
-            if (this.clienteRepository.existsByPartitaIva(body.partitaIva())) {
+            if (clienteRepository.existsByPartitaIvaAndUtenteId(body.partitaIva(), utente.getId())) {
                 throw new BadRequEx("La partita IVA " + body.partitaIva() + " è già in uso!");
             }
         }
 
         if (!trovato.getCodiceFiscale().equalsIgnoreCase(body.codiceFiscale())) {
-            if (this.clienteRepository.existsByCodiceFiscale(body.codiceFiscale())) {
+            if (clienteRepository.existsByCodiceFiscaleAndUtenteId(body.codiceFiscale(), utente.getId())) {
                 throw new BadRequEx("Il codice fiscale " + body.codiceFiscale() + " è già in uso!");
             }
         }
@@ -80,25 +105,31 @@ public class ClienteService {
         trovato.setIndirizzo(body.indirizzo());
         trovato.setCitta(body.citta());
 
-        return this.clienteRepository.save(trovato);
+        return clienteRepository.save(trovato);
     }
 
     public void findByIdAndDelete(UUID id) {
-        Cliente trovato = this.findById(id);
-        this.clienteRepository.delete(trovato);
+        Cliente trovato = findById(id);
+        clienteRepository.delete(trovato);
     }
 
     public Cliente findByEmail(String email) {
-        return this.clienteRepository.findByEmail(email)
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        return clienteRepository.findByEmailAndUtenteId(email, utente.getId())
                 .orElseThrow(() -> new NotFound("Cliente con email " + email + " non trovato"));
     }
 
     public Cliente findByPartitaIva(String partitaIva) {
-        return this.clienteRepository.findByPartitaIva(partitaIva)
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        return clienteRepository.findByPartitaIvaAndUtenteId(partitaIva, utente.getId())
                 .orElseThrow(() -> new NotFound("Cliente con partita IVA " + partitaIva + " non trovato"));
     }
 
     public List<Cliente> searchByNome(String nome) {
-        return this.clienteRepository.findByNomeContainingIgnoreCase(nome);
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        return clienteRepository.findByNomeContainingIgnoreCaseAndUtenteId(nome, utente.getId());
     }
 }

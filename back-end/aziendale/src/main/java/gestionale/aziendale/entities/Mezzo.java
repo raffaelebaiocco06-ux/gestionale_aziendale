@@ -38,6 +38,7 @@ public class Mezzo {
     private LocalDate bolloScadenza;
     @Column(nullable = false)
     private LocalDate revisioneScadenza;
+
     @ManyToOne
     @JoinColumn(name = "utente_id")
     private Utente utente;

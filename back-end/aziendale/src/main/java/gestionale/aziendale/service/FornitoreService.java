@@ -1,6 +1,7 @@
 package gestionale.aziendale.service;
 
 import gestionale.aziendale.entities.Fornitore;
+import gestionale.aziendale.entities.Utente;
 import gestionale.aziendale.exception.BadRequEx;
 import gestionale.aziendale.exception.NotFound;
 import gestionale.aziendale.payload.FornitoreDTO;
@@ -15,17 +16,24 @@ import java.util.UUID;
 public class FornitoreService {
 
     private final FornitoreRepository fornitoreRepository;
+    private final CurrentUserService currentUserService;
 
-    public FornitoreService(FornitoreRepository fornitoreRepository) {
+    public FornitoreService(
+            FornitoreRepository fornitoreRepository,
+            CurrentUserService currentUserService
+    ) {
         this.fornitoreRepository = fornitoreRepository;
+        this.currentUserService = currentUserService;
     }
 
     public Fornitore save(FornitoreDTO body) {
-        if (this.fornitoreRepository.existsByEmail(body.email())) {
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        if (fornitoreRepository.existsByEmailAndUtenteId(body.email(), utente.getId())) {
             throw new BadRequEx("L'email " + body.email() + " è già in uso!");
         }
 
-        if (this.fornitoreRepository.existsByPartitaIva(body.partitaIva())) {
+        if (fornitoreRepository.existsByPartitaIvaAndUtenteId(body.partitaIva(), utente.getId())) {
             throw new BadRequEx("La partita IVA " + body.partitaIva() + " è già in uso!");
         }
 
@@ -38,33 +46,42 @@ public class FornitoreService {
                 body.categoria()
         );
 
-        return this.fornitoreRepository.save(nuovoFornitore);
+        nuovoFornitore.setUtente(utente);
+
+        return fornitoreRepository.save(nuovoFornitore);
     }
 
     public Page<Fornitore> findAll(int page, int size, String sortBy) {
         if (size > 100 || size <= 0) size = 10;
         if (page < 0) page = 0;
 
+        Utente utente = currentUserService.getUtenteLoggato();
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
-        return this.fornitoreRepository.findAll(pageable);
+
+        return fornitoreRepository.findByUtenteId(utente.getId(), pageable);
     }
 
     public Fornitore findById(UUID id) {
-        return this.fornitoreRepository.findById(id)
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        return fornitoreRepository.findByIdAndUtenteId(id, utente.getId())
                 .orElseThrow(() -> new NotFound("Fornitore con id " + id + " non trovato"));
     }
 
     public Fornitore findByIdAndUpdate(UUID id, FornitoreDTO body) {
-        Fornitore trovato = this.findById(id);
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        Fornitore trovato = findById(id);
 
         if (!trovato.getEmail().equalsIgnoreCase(body.email())) {
-            if (this.fornitoreRepository.existsByEmail(body.email())) {
+            if (fornitoreRepository.existsByEmailAndUtenteId(body.email(), utente.getId())) {
                 throw new BadRequEx("L'email " + body.email() + " è già in uso!");
             }
         }
 
         if (!trovato.getPartitaIva().equalsIgnoreCase(body.partitaIva())) {
-            if (this.fornitoreRepository.existsByPartitaIva(body.partitaIva())) {
+            if (fornitoreRepository.existsByPartitaIvaAndUtenteId(body.partitaIva(), utente.getId())) {
                 throw new BadRequEx("La partita IVA " + body.partitaIva() + " è già in uso!");
             }
         }
@@ -76,29 +93,37 @@ public class FornitoreService {
         trovato.setIndirizzo(body.indirizzo());
         trovato.setCategoria(body.categoria());
 
-        return this.fornitoreRepository.save(trovato);
+        return fornitoreRepository.save(trovato);
     }
 
     public void findByIdAndDelete(UUID id) {
-        Fornitore trovato = this.findById(id);
-        this.fornitoreRepository.delete(trovato);
+        Fornitore trovato = findById(id);
+        fornitoreRepository.delete(trovato);
     }
 
     public Fornitore findByEmail(String email) {
-        return this.fornitoreRepository.findByEmail(email)
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        return fornitoreRepository.findByEmailAndUtenteId(email, utente.getId())
                 .orElseThrow(() -> new NotFound("Fornitore con email " + email + " non trovato"));
     }
 
     public Fornitore findByPartitaIva(String partitaIva) {
-        return this.fornitoreRepository.findByPartitaIva(partitaIva)
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        return fornitoreRepository.findByPartitaIvaAndUtenteId(partitaIva, utente.getId())
                 .orElseThrow(() -> new NotFound("Fornitore con partita IVA " + partitaIva + " non trovato"));
     }
 
     public List<Fornitore> searchByNome(String nome) {
-        return this.fornitoreRepository.findByNomeContainingIgnoreCase(nome);
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        return fornitoreRepository.findByNomeContainingIgnoreCaseAndUtenteId(nome, utente.getId());
     }
 
     public List<Fornitore> searchByCategoria(String categoria) {
-        return this.fornitoreRepository.findByCategoriaContainingIgnoreCase(categoria);
+        Utente utente = currentUserService.getUtenteLoggato();
+
+        return fornitoreRepository.findByCategoriaContainingIgnoreCaseAndUtenteId(categoria, utente.getId());
     }
 }

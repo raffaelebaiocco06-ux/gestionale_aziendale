@@ -33,6 +33,10 @@ public class Cliente {
     @Column(nullable = false)
     private String citta;
 
+    @ManyToOne
+    @JoinColumn(name = "utente_id")
+    private Utente utente;
+
     public Cliente(String nome, String partitaIva, String codiceFiscale, String telefono, String email, String indirizzo, String citta) {
         this.nome = nome;
         this.partitaIva = partitaIva;

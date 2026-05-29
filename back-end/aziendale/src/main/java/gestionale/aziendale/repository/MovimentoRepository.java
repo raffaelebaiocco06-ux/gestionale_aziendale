@@ -3,32 +3,46 @@ package gestionale.aziendale.repository;
 import gestionale.aziendale.entities.Movimento;
 import gestionale.aziendale.enumm.StatoPagamento;
 import gestionale.aziendale.enumm.TipoMovimento;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+
 @Repository
 public interface MovimentoRepository extends JpaRepository<Movimento, UUID> {
 
-    List<Movimento> findByTipo(TipoMovimento tipo);
+    Page<Movimento> findByUtenteId(UUID utenteId, Pageable pageable);
 
-    List<Movimento> findByStato(StatoPagamento stato);
+    Optional<Movimento> findByIdAndUtenteId(UUID id, UUID utenteId);
 
-    List<Movimento> findByCategoriaId(UUID categoriaId);
+    List<Movimento> findByTipoAndUtenteId(TipoMovimento tipo, UUID utenteId);
 
-    List<Movimento> findByClienteId(UUID clienteId);
+    List<Movimento> findByStatoAndUtenteId(StatoPagamento stato, UUID utenteId);
 
-    List<Movimento> findByFornitoreId(UUID fornitoreId);
+    List<Movimento> findByCategoriaIdAndUtenteId(UUID categoriaId, UUID utenteId);
 
-    List<Movimento> findByMezzoId(UUID mezzoId);
+    List<Movimento> findByClienteIdAndUtenteId(UUID clienteId, UUID utenteId);
 
-    List<Movimento> findByDataMovimentoBetween(LocalDate start, LocalDate end);
+    List<Movimento> findByFornitoreIdAndUtenteId(UUID fornitoreId, UUID utenteId);
 
-    List<Movimento> findByTipoAndDataMovimentoBetween(
+    List<Movimento> findByMezzoIdAndUtenteId(UUID mezzoId, UUID utenteId);
+    List<Movimento> findByUtenteId(UUID utenteId);
+
+    List<Movimento> findByDataMovimentoBetweenAndUtenteId(
+            LocalDate start,
+            LocalDate end,
+            UUID utenteId
+    );
+
+    List<Movimento> findByTipoAndDataMovimentoBetweenAndUtenteId(
             TipoMovimento tipo,
             LocalDate start,
-            LocalDate end
+            LocalDate end,
+            UUID utenteId
     );
 }

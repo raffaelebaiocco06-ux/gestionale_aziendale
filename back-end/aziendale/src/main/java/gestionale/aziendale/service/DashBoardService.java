@@ -1,9 +1,6 @@
 package gestionale.aziendale.service;
 
-import gestionale.aziendale.entities.Cliente;
-import gestionale.aziendale.entities.Fornitore;
-import gestionale.aziendale.entities.Mezzo;
-import gestionale.aziendale.entities.Movimento;
+import gestionale.aziendale.entities.*;
 import gestionale.aziendale.enumm.TipoMovimento;
 import gestionale.aziendale.payload.DashBoardDTO;
 import gestionale.aziendale.repository.*;
@@ -15,40 +12,91 @@ import java.util.List;
 
 @Service
 public class DashBoardService {
+
     private final MovimentoRepository movimentoRepository;
     private final ClienteRepository clienteRepository;
     private final FornitoreRepository fornitoreRepository;
     private final MezzoRepository mezzoRepository;
     private final ScadenzaRepository scadenzaRepository;
+    private final CurrentUserService currentUserService;
 
-    public DashBoardService(MovimentoRepository movimentoRepository, ClienteRepository clienteRepository, FornitoreRepository fornitoreRepository, MezzoRepository mezzoRepository, ScadenzaRepository scadenzaRepository) {
+    public DashBoardService(
+            MovimentoRepository movimentoRepository,
+            ClienteRepository clienteRepository,
+            FornitoreRepository fornitoreRepository,
+            MezzoRepository mezzoRepository,
+            ScadenzaRepository scadenzaRepository,
+            CurrentUserService currentUserService
+    ) {
         this.movimentoRepository = movimentoRepository;
         this.clienteRepository = clienteRepository;
         this.fornitoreRepository = fornitoreRepository;
         this.mezzoRepository = mezzoRepository;
         this.scadenzaRepository = scadenzaRepository;
+        this.currentUserService = currentUserService;
     }
-public DashBoardDTO getDashBoard(){
-    List<Movimento> listamovimenti=movimentoRepository.findAll();
-    long numeromovimenti= listamovimenti.size();
-    List<Movimento> listaentrate= listamovimenti.stream().filter(e-> e.getTipo() == TipoMovimento.ENTRATA).toList();
-    List<Movimento> listauscite= listamovimenti.stream().filter(e-> e.getTipo() == TipoMovimento.USCITA).toList();
-    BigDecimal entrate = listaentrate.stream().map(Movimento::getImporto).reduce(BigDecimal.ZERO, BigDecimal::add);
-    BigDecimal uscite = listauscite.stream().map(Movimento::getImporto).reduce(BigDecimal.ZERO, BigDecimal::add);
-    BigDecimal utile= entrate.subtract(uscite);
-    List<Cliente> listaclienti=clienteRepository.findAll();
-    long numeroclienti= listaclienti.size();
-    List<Fornitore> listafotnitori=fornitoreRepository.findAll();
-    long numerofornitori= listafotnitori.size();
-    List<Mezzo> listam=mezzoRepository.findAll();
-    long numeromezzi= listam.size();
 
-    LocalDate oggi = LocalDate.now();
-    LocalDate tra30Giorni = oggi.plusDays(30);
-    long scadenzeScadute = scadenzaRepository.findByDataScadenzaBefore(oggi).size();
-    long scadenzeImminenti = scadenzaRepository.findByDataScadenzaBetween(oggi, tra30Giorni).size();
+    public DashBoardDTO getDashBoard() {
+        Utente utente = currentUserService.getUtenteLoggato();
 
-    return new DashBoardDTO(entrate, uscite, utile, numeroclienti, numerofornitori, numeromezzi, numeromovimenti, scadenzeImminenti, scadenzeScadute);
+        List<Movimento> listaMovimenti =
+                movimentoRepository.findByUtenteId(utente.getId());
 
-}
+        long numeroMovimenti = listaMovimenti.size();
+
+        List<Movimento> listaEntrate = listaMovimenti.stream()
+                .filter(movimento -> movimento.getTipo() == TipoMovimento.ENTRATA)
+                .toList();
+
+        List<Movimento> listaUscite = listaMovimenti.stream()
+                .filter(movimento -> movimento.getTipo() == TipoMovimento.USCITA)
+                .toList();
+
+        BigDecimal entrate = listaEntrate.stream()
+                .map(Movimento::getImporto)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal uscite = listaUscite.stream()
+                .map(Movimento::getImporto)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal utile = entrate.subtract(uscite);
+
+        long numeroClienti =
+                clienteRepository.findByUtenteId(utente.getId()).size();
+
+        long numeroFornitori =
+                fornitoreRepository.findByUtenteId(utente.getId()).size();
+
+        long numeroMezzi =
+                mezzoRepository.findByUtenteId(utente.getId()).size();
+
+        LocalDate oggi = LocalDate.now();
+        LocalDate tra30Giorni = oggi.plusDays(30);
+
+        long scadenzeScadute =
+                scadenzaRepository.findByDataScadenzaBeforeAndUtenteId(
+                        oggi,
+                        utente.getId()
+                ).size();
+
+        long scadenzeImminenti =
+                scadenzaRepository.findByDataScadenzaBetweenAndUtenteId(
+                        oggi,
+                        tra30Giorni,
+                        utente.getId()
+                ).size();
+
+        return new DashBoardDTO(
+                entrate,
+                uscite,
+                utile,
+                numeroClienti,
+                numeroFornitori,
+                numeroMezzi,
+                numeroMovimenti,
+                scadenzeImminenti,
+                scadenzeScadute
+        );
+    }
 }
