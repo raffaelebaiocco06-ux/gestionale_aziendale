@@ -1,27 +1,85 @@
 import { useEffect, useState } from "react";
-import { getMezzi, deleteMezzo } from "../js/mezzi";
+import { createMezzo, deleteMezzo, getMezzi } from "../js/mezzi";
+import Modale from "../Components/Modale";
 
 function Mezzi() {
+  const formVuoto = {
+    targa: "",
+    marca: "",
+    modello: "",
+    tipo: "AUTO",
+    anno: "",
+    assicurazioneScadenza: "",
+    bolloScadenza: "",
+    revisioneScadenza: "",
+  };
+
   const [mezzi, setMezzi] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errore, setErrore] = useState("");
   const [cerca, setCerca] = useState("");
+  const [modaleAperta, setModaleAperta] = useState(false);
+  const [form, setForm] = useState(formVuoto);
+
+  const estraiLista = (data) => data?.content || data || [];
+
+  const caricaMezzi = async () => {
+    try {
+      setLoading(true);
+      setErrore("");
+      const risposta = await getMezzi();
+      setMezzi(estraiLista(risposta.data));
+    } catch (error) {
+      console.error(error);
+      setErrore("Errore durante il caricamento dei mezzi");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const caricaMezzi = async () => {
-      try {
-        const risposta = await getMezzi();
-        setMezzi(risposta.data.content || risposta.data);
-      } catch (error) {
-        console.error(error);
-        setErrore("Errore durante il caricamento dei mezzi");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     caricaMezzi();
   }, []);
+
+  const cambiaValore = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const apriNuovoMezzo = () => {
+    setForm(formVuoto);
+    setErrore("");
+    setModaleAperta(true);
+  };
+
+  const salvaMezzo = async (e) => {
+    e.preventDefault();
+
+    try {
+      const datiDaInviare = {
+        targa: form.targa.trim().toUpperCase(),
+        marca: form.marca.trim(),
+        modello: form.modello.trim(),
+        tipo: form.tipo,
+        anno: Number(form.anno),
+        assicurazioneScadenza: form.assicurazioneScadenza,
+        bolloScadenza: form.bolloScadenza,
+        revisioneScadenza: form.revisioneScadenza,
+      };
+
+      const risposta = await createMezzo(datiDaInviare);
+
+      setMezzi((listaAttuale) => [...listaAttuale, risposta.data]);
+      setForm(formVuoto);
+      setErrore("");
+      setModaleAperta(false);
+    } catch (error) {
+      console.error(error);
+      setErrore(error.response?.data?.message || "Errore durante il salvataggio del mezzo");
+    }
+  };
 
   const eliminaMezzo = async (id) => {
     const conferma = window.confirm("Vuoi eliminare questo mezzo?");
@@ -30,6 +88,7 @@ function Mezzi() {
     try {
       await deleteMezzo(id);
       setMezzi((listaAttuale) => listaAttuale.filter((mezzo) => mezzo.id !== id));
+      setErrore("");
     } catch (error) {
       console.error(error);
       setErrore("Errore durante l'eliminazione del mezzo");
@@ -52,7 +111,6 @@ function Mezzi() {
     <main className="min-h-screen bg-slate-100 p-8">
       <div className="mx-auto max-w-7xl">
         <h1 className="text-3xl font-bold text-zinc-900">Gestione Mezzi</h1>
-
         <p className="mt-2 text-zinc-600">Qui puoi visualizzare e gestire tutti i mezzi aziendali.</p>
 
         <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -64,13 +122,13 @@ function Mezzi() {
             className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500 md:max-w-sm"
           />
 
-          <button className="rounded-xl bg-emerald-500 px-5 py-3 font-semibold text-white hover:bg-emerald-400">+ Aggiungi mezzo</button>
+          <button onClick={apriNuovoMezzo} className="rounded-xl bg-emerald-500 px-5 py-3 font-semibold text-white hover:bg-emerald-400">
+            + Aggiungi mezzo
+          </button>
         </div>
 
         {loading && <p className="mt-6">Caricamento mezzi...</p>}
-
         {errore && <div className="mt-6 rounded-xl bg-red-100 p-4 text-red-700">{errore}</div>}
-
         {!loading && mezziFiltrati.length === 0 && <p className="mt-6 text-zinc-500">Nessun mezzo trovato.</p>}
 
         {!loading && mezziFiltrati.length > 0 && (
@@ -114,6 +172,106 @@ function Mezzi() {
               </tbody>
             </table>
           </div>
+        )}
+
+        {modaleAperta && (
+          <Modale titolo="Aggiungi mezzo" onClose={() => setModaleAperta(false)}>
+            <form onSubmit={salvaMezzo} className="space-y-4">
+              <input
+                type="text"
+                name="targa"
+                placeholder="Targa"
+                value={form.targa}
+                onChange={cambiaValore}
+                className="w-full rounded-xl border border-zinc-300 px-4 py-3 uppercase outline-none focus:border-emerald-500"
+                required
+              />
+
+              <input
+                type="text"
+                name="marca"
+                placeholder="Marca"
+                value={form.marca}
+                onChange={cambiaValore}
+                className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500"
+                required
+              />
+
+              <input
+                type="text"
+                name="modello"
+                placeholder="Modello"
+                value={form.modello}
+                onChange={cambiaValore}
+                className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500"
+                required
+              />
+
+              <select
+                name="tipo"
+                value={form.tipo}
+                onChange={cambiaValore}
+                className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500"
+                required
+              >
+                <option value="AUTO">Auto</option>
+                <option value="FURGONE">Furgone</option>
+                <option value="CAMION">Camion</option>
+              </select>
+
+              <input
+                type="number"
+                name="anno"
+                placeholder="Anno"
+                value={form.anno}
+                onChange={cambiaValore}
+                min="1900"
+                max="2100"
+                className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500"
+                required
+              />
+
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-zinc-700">Scadenza assicurazione</label>
+                <input
+                  type="date"
+                  name="assicurazioneScadenza"
+                  value={form.assicurazioneScadenza}
+                  onChange={cambiaValore}
+                  className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-zinc-700">Scadenza bollo</label>
+                <input
+                  type="date"
+                  name="bolloScadenza"
+                  value={form.bolloScadenza}
+                  onChange={cambiaValore}
+                  className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-semibold text-zinc-700">Scadenza revisione</label>
+                <input
+                  type="date"
+                  name="revisioneScadenza"
+                  value={form.revisioneScadenza}
+                  onChange={cambiaValore}
+                  className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-emerald-500"
+                  required
+                />
+              </div>
+
+              <button type="submit" className="w-full rounded-xl bg-emerald-500 py-3 font-semibold text-white hover:bg-emerald-400">
+                Salva mezzo
+              </button>
+            </form>
+          </Modale>
         )}
       </div>
     </main>
