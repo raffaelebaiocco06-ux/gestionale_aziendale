@@ -1,5 +1,6 @@
 package gestionale.aziendale.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gestionale.aziendale.enumm.StatoElementoMappa;
 import gestionale.aziendale.enumm.TipoElementoMappa;
 import jakarta.persistence.*;
@@ -22,6 +23,7 @@ public class ElementoMappa {
 
     @ManyToOne
     @JoinColumn(name = "mappa_fiera_id", nullable = false)
+    @JsonIgnore
     private MappaFiera mappaFiera;
 
     private String nome;
